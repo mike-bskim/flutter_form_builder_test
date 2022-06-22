@@ -43,12 +43,13 @@ class MyHomePageState extends State<MyHomePage> {
       autoValidate = AutovalidateMode.always;
     });
 
-    // if (!_fbKey.currentState.validate()) {
-    //   return;
-    // }
-    //
-    // _fbKey.currentState.save();
-    // final inputValues = _fbKey.currentState.value;
+    if (!_fbKey.currentState!.validate()) {
+      return;
+    }
+
+    _fbKey.currentState!.save();
+    final inputValues = _fbKey.currentState!.value;
+    debugPrint(inputValues.toString());
     //
     // Navigator.pushReplacement(
     //   context,
@@ -57,7 +58,6 @@ class MyHomePageState extends State<MyHomePage> {
     //   }),
     // );
     //
-    // debugPrint(inputValues.toString());
   }
 
   // List<String> getSuggestion(String query) {
@@ -85,10 +85,10 @@ class MyHomePageState extends State<MyHomePage> {
   // }
 
   InputDecoration inputDecoration(String label) => InputDecoration(
-      filled: true,
-      labelText: label,
-      border: const OutlineInputBorder(),
-    );
+        filled: true,
+        labelText: label,
+        border: const OutlineInputBorder(),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +122,7 @@ class MyHomePageState extends State<MyHomePage> {
                           startDate.year + 1, startDate.month, startDate.day),
                       format: DateFormat('yyyy-MM-dd'),
                       decoration: inputDecoration('시작일'),
+                      // 하나만 검증하려면 required 사용
                       validator: FormBuilderValidators.required(
                         errorText: '시작일은 필수입니다',
                       ),
@@ -131,36 +132,31 @@ class MyHomePageState extends State<MyHomePage> {
                       //   )
                       // ],
                     ),
-                    // const SizedBox(height: 20),
-                    // FormBuilderDateTimePicker(
-                    //   attribute: 'endDate',
-                    //   inputType: InputType.date,
-                    //   initialValue: startDate,
-                    //   firstDate: startDate,
-                    //   lastDate: DateTime(
-                    //       startDate.year + 1, startDate.month, startDate.day),
-                    //   format: DateFormat('yyyy-MM-dd'),
-                    //   decoration: const InputDecoration(
-                    //     filled: true,
-                    //     labelText: '종료일',
-                    //     border: OutlineInputBorder(),
-                    //   ),
-                    //   validators: [
-                    //     FormBuilderValidators.required(
-                    //       errorText: '종료일은 필수입니다',
-                    //     ),
-                    //     (val) {
-                    //       debugPrint(val is DateTime);
-                    //       final sd = _fbKey.currentState.fields['startDate']
-                    //           .currentState.value;
-                    //
-                    //       if (sd != null && sd.isAfter(val)) {
-                    //         return '시작일이 종료일보다 뒤입니다';
-                    //       }
-                    //       return null;
-                    //     }
-                    //   ],
-                    // ),
+                    const SizedBox(height: 20),
+                    FormBuilderDateTimePicker(
+                      name: 'endDate',
+                      inputType: InputType.date,
+                      initialValue: startDate,
+                      firstDate: startDate,
+                      lastDate: DateTime(
+                          startDate.year + 1, startDate.month, startDate.day),
+                      format: DateFormat('yyyy-MM-dd'),
+                      decoration: inputDecoration('종료일'),
+                      // 여러가지 검증하려면 compose 사용
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(errorText: '종료일은 필수입니다'),
+                        (val) {
+                          debugPrint('val: $val');
+                            final sd = _fbKey.currentState!.fields['startDate']!.value;
+                            debugPrint('sd: $sd');
+
+                            if (sd != null && sd.isAfter(val)) {
+                              return '시작일이 종료일보다 뒤입니다';
+                            }
+                            return null;
+                        },
+                      ]),
+                    ),
                     // const SizedBox(height: 20),
                     // FormBuilderDropdown(
                     //   attribute: 'cropId',
