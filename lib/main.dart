@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-
-// import 'package:form_builder/data.dart';
 import 'package:intl/intl.dart';
 
 import 'data.dart';
-
-// import 'result.dart';
 
 void main() => runApp(const MyApp());
 
@@ -36,19 +32,23 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final DateTime startDate = DateTime.now();
-  var autoValidate = AutovalidateMode.disabled;
+  AutovalidateMode autoValidate = AutovalidateMode.disabled;
 
   void _submit() {
     setState(() {
       autoValidate = AutovalidateMode.always;
     });
 
-    if (!_fbKey.currentState!.validate()) {
+    final form = _fbKey.currentState;
+    if (form == null || !form.validate()) {
       return;
     }
 
-    _fbKey.currentState!.save();
-    final inputValues = _fbKey.currentState!.value;
+    // _fbKey.currentState!.save();
+    form.save();
+
+    // final inputValues = _fbKey.currentState!.value;
+    final inputValues = form.value;
     debugPrint(inputValues.toString());
     //
     // Navigator.pushReplacement(
@@ -110,14 +110,14 @@ class MyHomePageState extends State<MyHomePage> {
                 child: Column(
                   children: <Widget>[
                     FormBuilderDateTimePicker(
+                      // map 형식의 키값 설정, attribute >> name
                       name: 'startDate',
-                      // map의 키값, attribute >> name
+                      // 시간은 사용안함
                       inputType: InputType.date,
-                      // 시간도 설정할 수 있음
                       initialValue: startDate,
-                      // 시작일 설정가능
+                      // 시작일 설정하면 과거 선택 불가
                       firstDate: startDate,
-                      // 시작~마지막 범위를 지정하여 제한가능
+                      // 마지막일 범위를 지정하여 제한가능
                       lastDate: DateTime(
                           startDate.year + 1, startDate.month, startDate.day),
                       format: DateFormat('yyyy-MM-dd'),
@@ -147,13 +147,14 @@ class MyHomePageState extends State<MyHomePage> {
                         FormBuilderValidators.required(errorText: '종료일은 필수입니다'),
                         (val) {
                           debugPrint('val: $val');
-                            final sd = _fbKey.currentState!.fields['startDate']!.value;
-                            debugPrint('sd: $sd');
+                          final sd =
+                              _fbKey.currentState!.fields['startDate']!.value;
+                          debugPrint('sd: $sd');
 
-                            if (sd != null && sd.isAfter(val)) {
-                              return '시작일이 종료일보다 뒤입니다';
-                            }
-                            return null;
+                          if (sd != null && sd.isAfter(val)) {
+                            return '시작일이 종료일보다 뒤입니다';
+                          }
+                          return null;
                         },
                       ]),
                     ),
@@ -288,7 +289,7 @@ class MyHomePageState extends State<MyHomePage> {
                 ),
                 MaterialButton(
                   onPressed: () {
-                    // _fbKey.currentState.reset();
+                    _fbKey.currentState!.reset();
                   },
                   color: Colors.red,
                   textColor: Colors.white,
