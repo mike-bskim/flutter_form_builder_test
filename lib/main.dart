@@ -51,8 +51,8 @@ class MyHomePageState extends State<MyHomePage> {
 
     // final inputValues = _fbKey.currentState!.value;
     var inputValues = form.value;
-    debugPrint(inputValues.toString());
-    debugPrint(_typeAheadController.text.toString());
+    debugPrint('form.value: [$inputValues]');
+    debugPrint('regionName: [${_typeAheadController.text}]');
 
     // Navigator.pushReplacement(
     //   context,
@@ -106,6 +106,7 @@ class MyHomePageState extends State<MyHomePage> {
         labelText: label,
         hintText: hint,
         border: const OutlineInputBorder(),
+        contentPadding: const EdgeInsets.all(16.0),
       );
 
   @override
@@ -279,48 +280,52 @@ class MyHomePageState extends State<MyHomePage> {
                         }
                       ]),
                     ),
-                    // const SizedBox(height: 20),
-                    // FormBuilderRadio(
-                    //   attribute: 'urgent',
-                    //   decoration: const InputDecoration(
-                    //     filled: true,
-                    //     labelText: '긴급 여부',
-                    //     border: OutlineInputBorder(),
-                    //   ),
-                    //   validators: [
-                    //     FormBuilderValidators.required(
-                    //       errorText: '긴급여부를 선택하세여',
-                    //     ),
-                    //   ],
-                    //   options: ['긴급', '보통']
-                    //       .map(
-                    //         (u) => FormBuilderFieldOption(value: u),
-                    //       )
-                    //       .toList(),
-                    // ),
-                    // const SizedBox(height: 20),
-                    // FormBuilderCheckboxList(
-                    //   attribute: 'warning',
-                    //   leadingInput: true,
-                    //   decoration: const InputDecoration(
-                    //     filled: true,
-                    //     fillColor: Colors.amberAccent,
-                    //     labelText: '주의사항',
-                    //     border: const OutlineInputBorder(),
-                    //   ),
-                    //   validators: [
-                    //     (val) {
-                    //       if (val.length != 2) {
-                    //         return '전부 동의하셔야 합니다';
-                    //       }
-                    //       return null;
-                    //     }
-                    //   ],
-                    //   options: [
-                    //     const FormBuilderFieldOption(value: '악천후 시 일정 재협의'),
-                    //     const FormBuilderFieldOption(value: '10% 선금 지급 필수'),
-                    //   ],
-                    // ),
+                    const SizedBox(height: 20),
+                    FormBuilderRadioGroup(
+                      name: 'urgent',
+                      orientation: OptionsOrientation.wrap,
+                      // 박스 내부의 여백을 줄일수 있다.
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      decoration: const InputDecoration(
+                        // 박스 내부의 여백을 줄일수 있다.
+                        contentPadding: EdgeInsets.all(8.0),
+                        filled: true,
+                        labelText: '긴급 여부',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: FormBuilderValidators.required(
+                        errorText: '긴급여부를 선택하세요',
+                      ),
+                      options: ['긴급', '보통']
+                        .map((u) => FormBuilderFieldOption(
+                                value: ['긴급', '보통'].indexOf(u).toString(),
+                                child: Text(u),
+                              ))
+                          .toList(),
+                    ),
+                    const SizedBox(height: 20),
+                    FormBuilderCheckboxGroup(
+                      name: 'warning',
+                      orientation: OptionsOrientation.wrap,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.all(8.0),
+                        filled: true,
+                        fillColor: Colors.amberAccent,
+                        labelText: '주의사항',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (val) {
+                        if (val == null || val.length != 2) {
+                          return '전부 동의하셔야 합니다';
+                        }
+                        return null;
+                      },
+                      options: const [
+                        FormBuilderFieldOption(value: '악천후 시 일정 재협의'),
+                        FormBuilderFieldOption(value: '10% 선금 지급 필수'),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -342,6 +347,7 @@ class MyHomePageState extends State<MyHomePage> {
                 MaterialButton(
                   onPressed: () {
                     _fbKey.currentState!.reset();
+                    _typeAheadController.clear();
                   },
                   color: Colors.red,
                   textColor: Colors.white,
