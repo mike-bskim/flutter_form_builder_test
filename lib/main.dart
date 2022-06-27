@@ -5,6 +5,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 
 import 'data.dart';
+import 'result.dart';
 
 void main() => runApp(const MyApp());
 
@@ -50,17 +51,22 @@ class MyHomePageState extends State<MyHomePage> {
     form.save();
 
     // final inputValues = _fbKey.currentState!.value;
-    var inputValues = form.value;
-    debugPrint('form.value: [$inputValues]');
+    Map<String, dynamic> tempValues = form.value;
+    debugPrint('form.value: [$tempValues]');
     debugPrint('regionName: [${_typeAheadController.text}]');
 
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(builder: (context) {
-    //     return Result(values: inputValues);
-    //   }),
-    // );
-    //
+    Map<String, dynamic> inputValues;
+    inputValues = {}..addAll(tempValues);
+    inputValues['regionName'] = _typeAheadController.text.toString();
+    debugPrint('inputValues: [$inputValues]');
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return Result(values: inputValues);
+      }),
+    );
+
   }
 
 // 입력한 단어가 포함한 모든 리스트 리턴
@@ -298,7 +304,7 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                       options: ['긴급', '보통']
                         .map((u) => FormBuilderFieldOption(
-                                value: ['긴급', '보통'].indexOf(u).toString(),
+                                value: u,//['긴급', '보통'].indexOf(u).toString(),
                                 child: Text(u),
                               ))
                           .toList(),
